@@ -3,6 +3,7 @@ using HtmlAgilityPack;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Net;
+using System.Text.RegularExpressions;
 
 const string pagination = "?o=";
 Console.WriteLine("Input (paste or manually type in) the artist URL. The program will just shut off if you input something invalid. Already existing files will not be downloaded anew.");
@@ -61,7 +62,7 @@ void GetImagesFromASinglePost(string postUrl)
             {
                 string hrefValue = url.GetAttributeValue("href", string.Empty);
                 string extension = hrefValue.Split(".").Last();
-                var fileName = postUrl.Split("post/")[1] + "_" + counter + "." + extension;
+                var fileName = RemoveIllegalFileNameChars(postUrl.Split("post/")[1] + "_" + counter + "." + extension);
                 if (!CheckIfFileExists(fileName))
                 {
                     Console.WriteLine($"Saving: {fileName}");
@@ -89,7 +90,7 @@ void GetPostAttachments(string postUrl)
         {
             var url = attachment.GetAttributeValue("href", string.Empty);
             var fileName = attachment.InnerText;
-            fileName = postUrl.Split("post/")[1] + "_" + fileName.Split("\n")[1].TrimStart().Split("\n")[0];
+            fileName = RemoveIllegalFileNameChars(postUrl.Split("post/")[1] + "_" + fileName.Split("\n")[1].TrimStart().Split("\n")[0]);
             if (!CheckIfFileExists(fileName))
             {
                 WebClient webClient = new WebClient();
@@ -150,4 +151,11 @@ void Sleep(int length = 1)
     }
 
     Thread.Sleep(randInt);
+}
+
+string RemoveIllegalFileNameChars(string input, string replacement = "")
+{
+    var regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
+    var r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
+    return r.Replace(input, replacement);
 }
