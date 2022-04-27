@@ -13,6 +13,10 @@ HtmlWeb hw = new HtmlWeb();
 
 var pages = GetAllPages(artistUrl);
 var fullPages = pages / 25;
+if(pages%25 == 0)
+{
+    fullPages -= 1;
+}
 
 for (int i = 0; i <= fullPages; i++)
 {
@@ -62,7 +66,7 @@ void GetImagesFromASinglePost(string postUrl)
             {
                 string hrefValue = url.GetAttributeValue("href", string.Empty);
                 string extension = hrefValue.Split(".").Last();
-                var fileName = RemoveIllegalFileNameChars(postUrl.Split("post/")[1] + "_" + counter + "." + extension);
+                var fileName = ValidateFileName(postUrl.Split("post/")[1] + "_" + counter + "." + extension);
                 if (!CheckIfFileExists(fileName))
                 {
                     Console.WriteLine($"Saving: {fileName}");
@@ -90,12 +94,14 @@ void GetPostAttachments(string postUrl)
         {
             var url = attachment.GetAttributeValue("href", string.Empty);
             var fileName = attachment.InnerText;
-            fileName = RemoveIllegalFileNameChars(postUrl.Split("post/")[1] + "_" + fileName.Split("\n")[1].TrimStart().Split("\n")[0]);
+            fileName = ValidateFileName(postUrl.Split("post/")[1] + "_" + fileName.Split("\n")[1].TrimStart().Split("\n")[0]);
             if (!CheckIfFileExists(fileName))
             {
+                var fullUrl = "https://kemono.party/" + url;
+                Console.WriteLine("Downloading: " + fullUrl);
                 WebClient webClient = new WebClient();
                 Console.WriteLine($"Downloading attachment: {fileName}");
-                webClient.DownloadFile(new Uri("https://kemono.party/" + url), fileName);
+                webClient.DownloadFile(new Uri(fullUrl), fileName);
                 Console.WriteLine("Download done.");
                 webClient.Dispose();
                 Sleep();
@@ -108,6 +114,8 @@ void GetPostAttachments(string postUrl)
 void SaveImage(string imageUrl, string filename)
 {
     WebClient client = new WebClient();
+
+    Console.WriteLine("Downloading: " + imageUrl);
     Stream stream = client.OpenRead(imageUrl);
     Bitmap bitmap; bitmap = new Bitmap(stream);
 
@@ -123,6 +131,7 @@ void SaveImage(string imageUrl, string filename)
 
 void SaveGif(string gifUrl, string fileName)
 {
+    Console.WriteLine("Downloading: " + gifUrl);
     WebClient webClient = new WebClient();
     Console.WriteLine($"Downloading attachment: {fileName}");
     webClient.DownloadFile(new Uri(gifUrl), fileName);
@@ -153,9 +162,14 @@ void Sleep(int length = 1)
     Thread.Sleep(randInt);
 }
 
-string RemoveIllegalFileNameChars(string input, string replacement = "")
+string ValidateFileName(string input, string replacement = "")
 {
     var regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
     var r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
-    return r.Replace(input, replacement);
+    var fileName = r.Replace(input, replacement);
+    if (fileName.Length > 120)
+    {
+        fileName = fileName.Substring(0, 119);
+    }
+    return fileName;
 }
