@@ -1,11 +1,12 @@
 ﻿
 using HtmlAgilityPack;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Net;
 using System.Text.RegularExpressions;
 
 const string pagination = "?o=";
+const string kemonoBaseUrl = "https://kemono.party/";
+
 Console.WriteLine("Input (paste or manually type in) the artist URL. The program will just shut off if you input something invalid. Already existing files will not be downloaded anew.");
 var artistUrl = Console.ReadLine();
 
@@ -76,9 +77,9 @@ void GetImagesFromASinglePost(string postUrl)
                     Console.WriteLine($"Saving: {fileName}");
                     if (extension.Equals("gif"))
                     {
-                        SaveGif("https://kemono.party/" + hrefValue, fileName);
+                        SaveGif(kemonoBaseUrl + hrefValue, fileName);
                     }
-                    else SaveImage("https://kemono.party/" + hrefValue, fileName);
+                    else SaveImage(kemonoBaseUrl + hrefValue, fileName);
 
                     Sleep();
                 }
@@ -101,7 +102,7 @@ void GetPostAttachments(string postUrl)
             fileName = ValidateFileName(postUrl.Split("post/")[1] + "_" + fileName.Split("\n")[1].TrimStart().Split("\n")[0]);
             if (!CheckIfFileExists(fileName))
             {
-                var fullUrl = "https://kemono.party/" + url;
+                var fullUrl = kemonoBaseUrl + url;
                 Console.WriteLine("Downloading: " + fullUrl);
                 WebClient webClient = new WebClient();
                 Console.WriteLine($"Downloading attachment: {fileName}");
