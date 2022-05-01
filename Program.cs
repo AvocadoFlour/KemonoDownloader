@@ -66,6 +66,10 @@ void GetImagesFromASinglePost(string postUrl)
             {
                 string hrefValue = url.GetAttributeValue("href", string.Empty);
                 string extension = hrefValue.Split(".").Last();
+                if (extension.Equals("jpe"))
+                {
+                    extension = "jpg";
+                }
                 var fileName = ValidateFileName(postUrl.Split("post/")[1] + "_" + counter + "." + extension);
                 if (!CheckIfFileExists(fileName))
                 {
