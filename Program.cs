@@ -12,8 +12,15 @@ var artistUrl = Console.ReadLine();
 
 HtmlWeb hw = new HtmlWeb();
 
-var pages = GetAllPages(artistUrl);
+
+var pages = TryLoop(() =>
+    {
+        return GetAllPages(artistUrl);
+    }
+);
+
 var fullPages = pages / 25;
+
 if(pages%25 == 0)
 {
     fullPages -= 1;
@@ -21,10 +28,15 @@ if(pages%25 == 0)
 
 for (int i = 0; i <= fullPages; i++)
 {
-    var postIds = GetAllPostOnAPage(artistUrl + pagination + i * 25);
+    var postIds = TryLoop(() =>
+    {
+        return GetAllPostOnAPage(artistUrl + pagination + i * 25);
+    });
+
     foreach (string postId in postIds)
     {
         Sleep(1);
+        
         GetPostAttachments(artistUrl + "/post/" + postId);
         GetImagesFromASinglePost(artistUrl + "/post/" + postId);
     }
@@ -56,7 +68,10 @@ List<string> GetAllPostOnAPage(string pageUrl)
 void GetImagesFromASinglePost(string postUrl)
 {
     HtmlDocument doc = new HtmlDocument();
-    doc = hw.Load(postUrl);
+    doc = TryLoop(() =>
+    {
+        return hw.Load(postUrl);
+    });
     if (doc.DocumentNode.SelectNodes("//div[contains(@class, 'post__files')]") != null)
     {
         foreach (HtmlNode div in doc.DocumentNode.SelectNodes("//div[contains(@class, 'post__files')]"))
@@ -92,7 +107,11 @@ void GetImagesFromASinglePost(string postUrl)
 
 void GetPostAttachments(string postUrl)
 {
-    var doc = hw.Load(postUrl);
+    var doc = TryLoop(() =>
+    {
+        return hw.Load(postUrl);
+    });
+
     if (doc.DocumentNode.SelectNodes("//a[contains(@class, 'post__attachment-link')]") != null)
     {
         foreach (HtmlNode attachment in doc.DocumentNode.SelectNodes("//a[contains(@class, 'post__attachment-link')]"))
@@ -106,7 +125,10 @@ void GetPostAttachments(string postUrl)
                 Console.WriteLine("Downloading: " + fullUrl);
                 WebClient webClient = new WebClient();
                 Console.WriteLine($"Downloading attachment: {fileName}");
-                webClient.DownloadFile(new Uri(fullUrl), fileName);
+                TryLoopAction(() =>
+                {
+                    webClient.DownloadFile(new Uri(fullUrl), fileName);
+                });
                 Console.WriteLine("Download done.");
                 webClient.Dispose();
                 Sleep();
@@ -121,7 +143,10 @@ void SaveImage(string imageUrl, string filename)
     WebClient client = new WebClient();
 
     Console.WriteLine("Downloading: " + imageUrl);
-    Stream stream = client.OpenRead(imageUrl);
+    Stream stream = TryLoop(() =>
+    {
+        return client.OpenRead(imageUrl);
+    });
     Bitmap bitmap; bitmap = new Bitmap(stream);
 
     if (bitmap != null)
@@ -139,7 +164,10 @@ void SaveGif(string gifUrl, string fileName)
     Console.WriteLine("Downloading: " + gifUrl);
     WebClient webClient = new WebClient();
     Console.WriteLine($"Downloading attachment: {fileName}");
-    webClient.DownloadFile(new Uri(gifUrl), fileName);
+    TryLoopAction(() =>
+    {
+        webClient.DownloadFile(new Uri(gifUrl), fileName);
+    });
     webClient.Dispose();
 }
 
@@ -177,4 +205,36 @@ string ValidateFileName(string input, string replacement = "")
         fileName = fileName.Substring(0, 119);
     }
     return fileName;
+}
+
+// https://stackoverflow.com/a/23103561/10299831
+T TryLoop<T>(Func<T> anyMethod)
+{
+    while (true)
+    {
+        try
+        {
+            return anyMethod();
+        }
+        catch
+        {
+            System.Threading.Thread.Sleep(2000); // *
+        }
+    }
+    return default(T);
+}
+
+void TryLoopAction(Action anyAction)
+{
+    while (true)
+    {
+        try
+        {
+            anyAction();
+        }
+        catch
+        {
+            System.Threading.Thread.Sleep(2000); // *
+        }
+    }
 }
