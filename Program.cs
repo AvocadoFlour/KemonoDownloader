@@ -216,8 +216,9 @@ T TryLoop<T>(Func<T> anyMethod)
         {
             return anyMethod();
         }
-        catch
+        catch (Exception e)
         {
+            Console.WriteLine(e.Message);
             System.Threading.Thread.Sleep(2000); // *
         }
     }
@@ -232,8 +233,9 @@ void TryLoopAction(Action anyAction)
         {
             anyAction();
         }
-        catch
+        catch(Exception e)
         {
+            Console.WriteLine(e.Message);
             System.Threading.Thread.Sleep(2000); // *
         }
     }
