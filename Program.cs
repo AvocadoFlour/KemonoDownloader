@@ -232,6 +232,7 @@ void TryLoopAction(Action anyAction)
         try
         {
             anyAction();
+            break;
         }
         catch(Exception e)
         {
