@@ -147,7 +147,11 @@ void SaveImage(string imageUrl, string filename)
     {
         return client.OpenRead(imageUrl);
     });
-    Bitmap bitmap; bitmap = new Bitmap(stream);
+    Bitmap bitmap = null;
+    TryLoopAction(() =>
+    {
+        bitmap = new Bitmap(stream);
+    });
 
     if (bitmap != null)
     {
