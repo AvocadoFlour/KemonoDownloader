@@ -5,7 +5,7 @@ artist, e.g. both Pixiv Fanbox and Fantia, you need to do the process
 for the both of those.
 Input just the zero-page link (without the "?o=" at the end).
 
-If your internet connection breaks, the folder inside of which you've placed 
+If the folder inside of which you've placed 
 the .exe hasn't got enough storage space, you input giberlish, etc. the program will just stop
 
 BTC:
