@@ -53,6 +53,7 @@ for (int i = 0; i <= fullPages; i++)
         
         GetPostAttachments(artistUrl + "/post/" + postId);
         GetImagesFromASinglePost(artistUrl + "/post/" + postId);
+
     }
 }
 
@@ -104,7 +105,7 @@ void GetImagesFromASinglePost(string postUrl)
                 {
                     extension = "jpg";
                 }
-                var fileName = ValidateFileName(postUrl.Split("post/")[1] + "_" + counter + "." + extension);
+                var fileName = ValidatePathName(postUrl.Split("post/")[1] + "_" + counter + "." + extension);
 
                 string postFolder = artistIndex.Item2;
 
@@ -149,7 +150,7 @@ void GetPostAttachments(string postUrl)
         {
             var url = attachment.GetAttributeValue("href", string.Empty);
             var fileName = attachment.InnerText;
-            fileName = ValidateFileName(postUrl.Split("post/")[1] + "_" + fileName.Split("\n")[1].TrimStart().Split("\n")[0]);
+            fileName = ValidatePathName(postUrl.Split("post/")[1] + "_" + fileName.Split("\n")[1].TrimStart().Split("\n")[0]);
             if (!CheckIfFileExists(artistIndex.Item2 + "\\" + fileName))
             {
                 var fullUrl = kemonoBaseUrl + url;
@@ -238,7 +239,7 @@ void Sleep(int length = 1)
     Thread.Sleep(randInt);
 }
 
-string ValidateFileName(string input, string replacement = "")
+string ValidatePathName(string input, string replacement = "")
 {
     var regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
     var r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
@@ -287,5 +288,5 @@ void TryLoopAction(Action anyAction)
 
 string GetPostName(HtmlDocument doc)
 {
-    return doc.DocumentNode.SelectSingleNode("//h1[contains(@class, 'post__title')]").ChildNodes.ElementAt(1).InnerText;
+    return ValidatePathName(doc.DocumentNode.SelectSingleNode("//h1[contains(@class, 'post__title')]").ChildNodes.ElementAt(1).InnerText);
 }
