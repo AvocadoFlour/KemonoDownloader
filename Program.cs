@@ -7,8 +7,13 @@ using System.Text.RegularExpressions;
 const string pagination = "?o=";
 const string kemonoBaseUrl = "https://kemono.party/";
 
-Console.WriteLine("Input (paste or manually type in) the artist URL. The program will just shut off if you input something invalid. Already existing files will not be downloaded anew.");
-var artistUrl = Console.ReadLine();
+Console.WriteLine("Input (paste or manually type in) the artist URLs. They must be seperated by a space. " +
+    "\n The program will not work properly if you don't correctly input the artist links." +
+    "\n Already existing files will not be downloaded anew.");
+var artistUrlsRaw = Console.ReadLine();
+
+List<string> artistUrls = artistUrlsRaw.Split(" ", StringSplitOptions.TrimEntries).ToList();
+
 Console.WriteLine("Do you want all of the media from a single post to also be put into post-based folder? \n");
 
 //https://stackoverflow.com/a/41609801/10299831
@@ -25,35 +30,40 @@ do
 
 HtmlWeb hw = new HtmlWeb();
 
-var artistIndex = TryLoop(() =>
-    {
-        return GetAllPagesAndArtistName(artistUrl);
-    }
-);
+DownloadArt(artistUrls);
 
-var fullPages = artistIndex.Item1 / 25;
-
-if(artistIndex.Item1% 25 == 0)
+void DownloadArt(List<string> artistUrls)
 {
-    fullPages -= 1;
-}
-
-System.IO.Directory.CreateDirectory(artistIndex.Item2);
-
-for (int i = 0; i <= fullPages; i++)
-{
-    var postIds = TryLoop(() =>
+    // One by one artist
+    foreach (var artistUrl in artistUrls)
     {
-        return GetAllPostOnAPage(artistUrl + pagination + i * 25);
-    });
+        var artistIndex = TryLoop(() =>
+            {
+                return GetAllPagesAndArtistName(artistUrl);
+            }
+        );
+        var fullPages = artistIndex.Item1 / 25;
+        if (artistIndex.Item1 % 25 == 0)
+        {
+            fullPages -= 1;
+        }
+        Directory.CreateDirectory(artistIndex.Item2);
+        for (int i = 0; i <= fullPages; i++)
+        {
+            var postIds = TryLoop(() =>
+            {
+                return GetAllPostOnAPage(artistUrl + pagination + i * 25);
+            });
 
-    foreach (string postId in postIds)
-    {
-        Sleep(1);
-        
-        GetPostAttachments(artistUrl + "/post/" + postId);
-        GetImagesFromASinglePost(artistUrl + "/post/" + postId);
+            foreach (string postId in postIds)
+            {
+                Sleep(1);
 
+                GetPostAttachments(artistUrl + "/post/" + postId, artistIndex);
+                GetImagesFromASinglePost(artistUrl + "/post/" + postId, artistIndex);
+
+            }
+        }
     }
 }
 
@@ -83,7 +93,7 @@ List<string> GetAllPostOnAPage(string pageUrl)
     return postIds;
 }
 
-void GetImagesFromASinglePost(string postUrl)
+void GetImagesFromASinglePost(string postUrl, Tuple<int, string> artistIndex)
 {
     HtmlDocument doc = new HtmlDocument();
     doc = TryLoop(() =>
@@ -110,7 +120,8 @@ void GetImagesFromASinglePost(string postUrl)
                 string postFolder = artistIndex.Item2;
 
                 // create a folder for each post as well
-                if (choice.Equals("y")) {
+                if (choice.Equals("y"))
+                {
                     var postName = GetPostName(doc);
                     postFolder = postFolder + "\\" + postName;
                 }
@@ -137,7 +148,7 @@ void GetImagesFromASinglePost(string postUrl)
     }
 }
 
-void GetPostAttachments(string postUrl)
+void GetPostAttachments(string postUrl, Tuple<int, string> artistIndex)
 {
     var doc = TryLoop(() =>
     {
@@ -278,7 +289,7 @@ void TryLoopAction(Action anyAction)
             anyAction();
             break;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e.Message);
             System.Threading.Thread.Sleep(2000); // *
