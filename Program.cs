@@ -6,17 +6,33 @@ using System.Text.RegularExpressions;
 
 const string pagination = "?o=";
 const string kemonoBaseUrl = "https://kemono.party/";
+List<string> artistUrls = null;
 
-Console.WriteLine("Input (paste or manually type in) the artist URLs. They must be seperated by a space. " +
-    "\n The program will not work properly if you don't correctly input the artist links." +
-    "\n Already existing files will not be downloaded anew.");
-var artistUrlsRaw = Console.ReadLine();
+Console.WriteLine("Would you like to download the artists to which the links are in the file \n\"artistUrls.txt\" or would you like to input the artist urls?");
+string menu;
+do
+{
+    Console.WriteLine("Input \"1\" to read from the file, or \"2\" to input the urls.");
+    menu = Console.ReadLine();
+    if (menu == "1" || menu == "2")
+        break;
+} while (true);
 
-List<string> artistUrls = artistUrlsRaw.Split(" ", StringSplitOptions.TrimEntries).ToList();
+if (menu == "1")
+{
+    artistUrls = ReadArtistUrlsFromFile();
+}
+if (menu == "2")
+{
+    Console.WriteLine("Input (paste or manually type in) the artist URLs. They must be seperated by a space. " +
+        "\n The program will not work properly if you don't correctly input the artist links." +
+        "\n Already existing files will not be downloaded anew.");
+    var artistUrlsRaw = Console.ReadLine();
+    SaveArtistUrlsToFile(artistUrlsRaw);
+    artistUrls = artistUrlsRaw.Split(" ", StringSplitOptions.TrimEntries).ToList();
+}
 
 Console.WriteLine("Do you want all of the media from a single post to also be put into post-based folder? \n");
-
-//https://stackoverflow.com/a/41609801/10299831
 string choice;
 do
 {
@@ -300,4 +316,28 @@ void TryLoopAction(Action anyAction)
 string GetPostName(HtmlDocument doc)
 {
     return ValidatePathName(doc.DocumentNode.SelectSingleNode("//h1[contains(@class, 'post__title')]").ChildNodes.ElementAt(1).InnerText);
+}
+
+List<string> ReadArtistUrlsFromFile()
+{
+    try
+    {
+        return File.ReadAllText("artistUrls.txt").Split(" ", StringSplitOptions.TrimEntries).ToList();
+    }
+    catch (FileNotFoundException e)
+    {
+        Console.WriteLine("The file with artist URLs does not exists. You need to make sure it does before you use this option." +
+            "\n Error:" +
+            "{0}", e.Message);
+        Environment.Exit(0);
+        return null;
+    }
+}
+
+void SaveArtistUrlsToFile(string artistUrls)
+{
+    using (StreamWriter sw = new StreamWriter("artistUrls.txt"))
+    {
+        sw.Write(artistUrls);
+    }
 }
