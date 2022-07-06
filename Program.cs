@@ -209,13 +209,14 @@ void SaveImage(string imageUrl, string filePath)
     WebClient client = new WebClient();
 
     Console.WriteLine("Downloading: " + imageUrl);
-    Stream stream = TryLoop(() =>
-    {
-        return client.OpenRead(imageUrl);
-    });
+    Stream stream = Stream.Null;
     Bitmap bitmap = null;
     TryLoopAction(() =>
     {
+        stream = TryLoop(() =>
+        {
+            return client.OpenRead(imageUrl);
+        });
         bitmap = new Bitmap(stream);
     });
 
