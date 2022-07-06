@@ -8,6 +8,10 @@ const string pagination = "?o=";
 const string kemonoBaseUrl = "https://kemono.party/";
 List<string> artistUrls = null;
 
+Console.ForegroundColor = ConsoleColor.Green;
+Console.WriteLine("Start ");
+Console.ResetColor();
+Console.Write("up. \n");
 Console.WriteLine("Would you like to download the artists to which the links are in the file \n\"artistUrls.txt\" or would you like to input the artist urls?");
 string menu;
 do
@@ -308,7 +312,10 @@ void TryLoopAction(Action anyAction)
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write("Error: ");
+            Console.ResetColor();
+            Console.Write(e.Message + "\n");
             System.Threading.Thread.Sleep(2000); // *
         }
     }
