@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="C:\Users\Gandeloft\source\repos\KemonoDownloaderDataModels\KemonoDownloaderDataModels.csproj" />
+    <ProjectReference Include="..\KemonoDownloaderDataModels\KemonoDownloaderDataModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>

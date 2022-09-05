@@ -4,7 +4,6 @@ using System.Net;
 using System.Text.RegularExpressions;
 using NLog;
 using static KemonoDownloader.Logic.PostManipulation;
-using KemonoDownloader.Logic;
 using KemonoDownloaderDataModels.Models;
 using KemonoDownloaderDataModels.Models.Enum;
 
