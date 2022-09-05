@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>KemonoDownloaderDataModels</id>
+    <version>1.0.0</version>
+    <authors>KemonoDownloaderDataModels</authors>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework="net6.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\Gandeloft\source\repos\KemonoDownloaderDataModels\bin\Debug\net6.0\KemonoDownloaderDataModels.dll" target="lib\net6.0\KemonoDownloaderDataModels.dll" />
+  </files>
+</package>

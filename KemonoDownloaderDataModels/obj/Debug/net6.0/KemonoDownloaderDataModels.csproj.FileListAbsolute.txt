@@ -1,0 +1,5 @@
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.csproj.AssemblyReference.cache
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.GeneratedMSBuildEditorConfig.editorconfig
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.AssemblyInfoInputs.cache
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.AssemblyInfo.cs
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.csproj.CoreCompileInputs.cache
