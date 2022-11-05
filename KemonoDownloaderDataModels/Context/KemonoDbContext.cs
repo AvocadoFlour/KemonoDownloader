@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
 public class KemonoDbContext : DbContext
 {
     public DbSet<Artist> Artists { get; set; }
-    public DbSet<ArtistUrl> ArtistUrls { get; set; }
     public DbSet<Media> Media { get; set; }
     public DbSet<Post> Posts { get; set; }
     public string DbPath { get; }
@@ -25,5 +25,15 @@ public class KemonoDbContext : DbContext
     // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder options)
         => options.UseSqlite($"Data Source={DbPath}");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Post>()
+            .HasAlternateKey(p => p.KemonoId);
+        modelBuilder.Entity<Artist>()
+            .HasAlternateKey(a => a.ArtistUrl);
+        modelBuilder.Entity<Media>()
+            .HasAlternateKey(a => a.KemonoId);
+    }
 
 }

@@ -9,9 +9,8 @@ namespace KemonoDownloaderDataModels.Models
 {
     public class Media
     {
-        public int Id { get; set; }
-
         [Key]
+        public int Id { get; set; }
         public int KemonoId { get; set; }
         public string FileName { get; set; }
 
@@ -27,14 +26,6 @@ namespace KemonoDownloaderDataModels.Models
         /// Parent post, the post inside of which this media was found
         /// </summary>
         public Post Post { get; set; }
-        public Media(int id, int kemonoId, string fileName, string path, bool exists, Post post)
-        {
-            Id = id;
-            KemonoId = kemonoId;
-            FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
-            Path = path ?? throw new ArgumentNullException(nameof(path));
-            Exists = exists;
-            Post = post ?? throw new ArgumentNullException(nameof(post));
-        }
+        public DateTime DateAdded { get; set; }
     }
 }

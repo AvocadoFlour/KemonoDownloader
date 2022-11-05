@@ -1,20 +1,23 @@
 {
   "version": 2,
-  "dgSpecHash": "hDw1eVif7jdhGnoZ96hdE91t8lXtH9ZlTroeX8zYM1ebzcOomDclMSlQq9xZOlSNUO6Xt1BDO/y/m4s9ytTscA==",
+  "dgSpecHash": "FtgxdFrbVUQPCdr9O1HqeLvGQDZ9oYdmy0renPimYO5Q9aWE4qKtLfMLaOJyX+Wv/o/O/18qaQ0lgnfWk2AJTw==",
   "success": true,
   "projectFilePath": "F:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.data.sqlite.core\\6.0.8\\microsoft.data.sqlite.core.6.0.8.nupkg.sha512",
-    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore\\6.0.8\\microsoft.entityframeworkcore.6.0.8.nupkg.sha512",
-    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\6.0.8\\microsoft.entityframeworkcore.abstractions.6.0.8.nupkg.sha512",
-    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\6.0.8\\microsoft.entityframeworkcore.analyzers.6.0.8.nupkg.sha512",
-    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\6.0.8\\microsoft.entityframeworkcore.relational.6.0.8.nupkg.sha512",
-    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite\\6.0.8\\microsoft.entityframeworkcore.sqlite.6.0.8.nupkg.sha512",
-    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite.core\\6.0.8\\microsoft.entityframeworkcore.sqlite.core.6.0.8.nupkg.sha512",
+    "C:\\Users\\Gandeloft\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
+    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.data.sqlite.core\\6.0.10\\microsoft.data.sqlite.core.6.0.10.nupkg.sha512",
+    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore\\6.0.10\\microsoft.entityframeworkcore.6.0.10.nupkg.sha512",
+    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\6.0.10\\microsoft.entityframeworkcore.abstractions.6.0.10.nupkg.sha512",
+    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\6.0.10\\microsoft.entityframeworkcore.analyzers.6.0.10.nupkg.sha512",
+    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore.design\\6.0.10\\microsoft.entityframeworkcore.design.6.0.10.nupkg.sha512",
+    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\6.0.10\\microsoft.entityframeworkcore.relational.6.0.10.nupkg.sha512",
+    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite\\6.0.10\\microsoft.entityframeworkcore.sqlite.6.0.10.nupkg.sha512",
+    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite.core\\6.0.10\\microsoft.entityframeworkcore.sqlite.core.6.0.10.nupkg.sha512",
+    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.entityframeworkcore.tools\\6.0.10\\microsoft.entityframeworkcore.tools.6.0.10.nupkg.sha512",
     "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\6.0.0\\microsoft.extensions.caching.abstractions.6.0.0.nupkg.sha512",
     "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.extensions.caching.memory\\6.0.1\\microsoft.extensions.caching.memory.6.0.1.nupkg.sha512",
     "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\6.0.0\\microsoft.extensions.configuration.abstractions.6.0.0.nupkg.sha512",
-    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\6.0.0\\microsoft.extensions.dependencyinjection.6.0.0.nupkg.sha512",
+    "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\6.0.1\\microsoft.extensions.dependencyinjection.6.0.1.nupkg.sha512",
     "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\6.0.0\\microsoft.extensions.dependencyinjection.abstractions.6.0.0.nupkg.sha512",
     "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.extensions.dependencymodel\\6.0.0\\microsoft.extensions.dependencymodel.6.0.0.nupkg.sha512",
     "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.extensions.logging\\6.0.0\\microsoft.extensions.logging.6.0.0.nupkg.sha512",
@@ -39,12 +42,6 @@
       "level": "Warning",
       "warningLevel": 1,
       "message": "You are running the 'restore' operation with an 'HTTP' source, 'http://api.nuget.org/v3/index.json'. Non-HTTPS access will be removed in a future version. Consider migrating to an 'HTTPS' source."
-    },
-    {
-      "code": "NU1803",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "You are running the 'restore' operation with an 'HTTP' source, 'http://baget.devweb.emakina.hr/v3/index.json'. Non-HTTPS access will be removed in a future version. Consider migrating to an 'HTTPS' source."
     }
   ]
 }
