@@ -1,0 +1,14 @@
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.csproj.AssemblyReference.cache
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.GeneratedMSBuildEditorConfig.editorconfig
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.AssemblyInfoInputs.cache
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.AssemblyInfo.cs
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.csproj.CoreCompileInputs.cache
+F:\KemonoDownloader\KemonoDownloaderDataModels\bin\Debug\net6.0\KemonoDownloaderDataModels.deps.json
+F:\KemonoDownloader\KemonoDownloaderDataModels\bin\Debug\net6.0\KemonoDownloaderDataModels.runtimeconfig.json
+F:\KemonoDownloader\KemonoDownloaderDataModels\bin\Debug\net6.0\KemonoDownloaderDataModels.dll
+F:\KemonoDownloader\KemonoDownloaderDataModels\bin\Debug\net6.0\KemonoDownloaderDataModels.pdb
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.dll
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\refint\KemonoDownloaderDataModels.dll
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.pdb
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\KemonoDownloaderDataModels.genruntimeconfig.cache
+F:\KemonoDownloader\KemonoDownloaderDataModels\obj\Debug\net6.0\ref\KemonoDownloaderDataModels.dll
