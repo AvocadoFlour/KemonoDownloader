@@ -11,6 +11,6 @@ namespace KemonoDownloaderDataModels.Models
         public string ArtistUrl { get; set; }
         public string PathOnDisk { get; set; }
         public DateTime DateAdded { get; set; }
-        public List<Post> ArtistPosts { get; set; }
+        public virtual List<Post> ArtistPosts { get; set; }
     }
 }

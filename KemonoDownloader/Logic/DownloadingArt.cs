@@ -3,15 +3,17 @@ using System.Net;
 using KemonoDownloaderDataModels.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
+using System.Drawing;
+using System;
 
 namespace KemonoDownloader.Logic
 {
     internal class DownloadingArt
     {
-        private static KemonoDbContext dbContext = new KemonoDbContext();
-        private readonly string KEMONO_BASE_URL = "https://kemono.party/";
+        public static readonly string KEMONO_BASE_URL = "https://kemono.party/";
         private readonly int POSTS_PER_PAGE = 50;
         private readonly string paginationMarker = "?o=";
+        private readonly MediaStorageOperations storageOps = new MediaStorageOperations();
 
         private CookieContainer _cookiesContainer => SetCookieContainer();
         public CookieContainer SetCookieContainer(string sessionString = "eyJfcGVybWFuZW50Ijp0cnVlLCJhY2NvdW50X2lkIjoxNzc0Nn0.Y0IIxA.blaHuCz9ddG7TEUw70X-oxMP1bo")
@@ -45,7 +47,7 @@ namespace KemonoDownloader.Logic
             );
 
             string artistName = GetArtistsName(firstArtistPage);
-            Artist artist = GetArtistDatabaseInstance(artistName, artistUrl);
+            Artist artist = storageOps.GetArtistDatabaseInstance(artistName, artistUrl);
 
             int numberOfPosts = GetArtistsNumberOfPages(firstArtistPage);
             GetAllArtistPosts(artist, numberOfPosts);
@@ -74,16 +76,89 @@ namespace KemonoDownloader.Logic
                 });
 
                 Console.WriteLine($"Processing {artist.Name} - ({artist.ArtistUrl}) posts");
-                foreach (string postHref in postHrefs)
+                ProcessPostHrefBatch(postHrefs, artist);
+            }
+        }
+
+        /// <summary>
+        /// The logic below is extracted into a seperate method because of the need
+        /// to break out of a two loops.
+        /// </summary>
+        /// <param name="postHrefs"></param>
+        /// <param name="artist"></param>
+        /// <returns></returns>
+        private void ProcessPostHrefBatch(List<string> postHrefs, Artist artist)
+        {
+            foreach (string postHref in postHrefs)
+            {
+                Console.Write($"Processing post {postHref}...");
+                if (storageOps.SavePostIntoDatabase(postHref, artist))
                 {
-                    Console.Write($"Processing post {postHref}...");
-                    if (SavePostIntoDatabase(postHref, artist))
+                    Console.WriteLine(" -- Post saved to database");
+                }
+                else
+                {
+                    Console.WriteLine("Post already exists in database");
+                }
+            }
+        }
+
+        private void GetImagesFromASinglePost(string choice, Post post)
+        {
+            HtmlWeb hw = new HtmlWeb();
+            HtmlDocument doc = new HtmlDocument();
+            doc = TryLoop(() =>
+            {
+                return hw.Load(post.Url());
+            });
+
+            if (doc.DocumentNode.SelectNodes("//div[contains(@class, 'post__files')]") != null)
+            {
+                foreach (HtmlNode div in doc.DocumentNode.SelectNodes("//div[contains(@class, 'post__files')]"))
+                {
+                    var counter = 0;
+                    // Get the value of the HREF attribute
+                    foreach (HtmlNode url in div.SelectNodes("//a[contains(@class, 'fileThumb')]"))
                     {
-                        Console.WriteLine(" -- Post saved to database");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Reached post that already exists in database");
+                        string hrefValue = url.GetAttributeValue("href", string.Empty);
+                        string extension = hrefValue.Split(".").Last();
+                        if (extension.Equals("jpe"))
+                        {
+                            extension = "jpg";
+                        }
+                        var fileName = storageOps.ValidatePathName(post.Url().Split("post/")[1] + "_" + counter + "." + extension);
+
+                        string postFolder = post.Artist.Name;
+
+                        Media mediaInDb = storageOps.GetMediaInDatabase(post, hrefValue, fileName);
+
+                        if (mediaInDb is null)
+                        {
+                            continue;
+                        }
+
+                        //// create a folder for each post as well
+                        //if (choice.Equals("y"))
+                        //{
+                        //    var postName = GetPostName(doc);
+                        //    postFolder = postFolder + "\\" + postName;
+                        //}
+
+                        // Make sure that the directory exists
+                        System.IO.Directory.CreateDirectory(postFolder);
+
+                        if (!storageOps.CheckIfFileExists(postFolder + "\\" + fileName))
+                        {
+                            Console.WriteLine($"Saving: {fileName}");
+                            if (extension.Equals("gif"))
+                            {
+                                SaveGif(KEMONO_BASE_URL + mediaInDb.Href, postFolder + "\\" + fileName);
+                            }
+                            else SaveImage(KEMONO_BASE_URL + mediaInDb.Href, postFolder + "\\" + fileName);
+                        }
+                        else Console.WriteLine($"File exists, skipping: {fileName}");
+                        counter += 1;
+                        storageOps.MarkMediaExistsInDb(mediaInDb);
                     }
                 }
             }
@@ -93,74 +168,24 @@ namespace KemonoDownloader.Logic
         {
             foreach (Post post in artist.ArtistPosts)
             {
+                if (post.Processed)
+                {
+                    Console.WriteLine($"\n {post.KemonoId} post fully processed.");
+                    continue;
+                }
+                Directory.CreateDirectory(artist.Name);
                 string choice = "n";
                 GetPostAttachments(choice, post);
                 GetImagesFromASinglePost(choice, post);
-            } 
+                storageOps.MarkPostProcessedInDb(post);
+            }
         }
 
-        /// <summary>
-        /// When an artist doesn't have the path value in the database
-        /// this method fills it (e.g. when an artist has only just 
-        /// been created)
-        /// </summary>
-        /// <param name="artist"></param>
-        private string CreateArtistPath(Artist artist)
+        private string GetPostHtmlContentAsString(Post post)
         {
-            /// from -> https://kemono.party/fanbox/user/9016
-            /// to -> fanbox/user/9016
-            char[] artistUrlReversed = artist.ArtistUrl.Reverse().ToArray();
-            string artistUrlReversedString = new string (artistUrlReversed);
-            int charactersToSkipInUrl = 0;
-            charactersToSkipInUrl += artistUrlReversedString.IndexOf("/");
-            artistUrlReversedString = new string(artistUrlReversedString.Skip(artistUrlReversedString.IndexOf("/")).ToArray());
-            charactersToSkipInUrl += artistUrlReversedString.IndexOf("/");
-            artistUrlReversedString = new string(artistUrlReversedString.Skip(artistUrlReversedString.IndexOf("/")).ToArray());
-            charactersToSkipInUrl += artistUrlReversedString.IndexOf("/");
-            string rawArtistKemonoHref = new string(artist.ArtistUrl.Skip(artist.ArtistUrl.Count() - charactersToSkipInUrl).ToArray());
-            string userDirectoryPath = ValidatePathName(artist.Name + "(" + artist.ArtistUrl.Remove(0, KEMONO_BASE_URL.Length) + ")");
-            userDirectoryPath = userDirectoryPath.Replace("user", "-");
-            return userDirectoryPath;
-        }
-
-        static string ValidatePathName(string input, string replacement = "")
-        {
-            var regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
-            var r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
-            var fileName = r.Replace(input, replacement);
-            if (fileName.Length > 120)
-            {
-                fileName = fileName.Substring(0, 119);
-            }
-            return fileName;
-        }
-
-        /// <summary>
-        /// Get Post from database.
-        /// If the post doesn't exists must be provided with an artist
-        /// as well because it needs to create the post and for that it needs
-        /// the artis to assotiate it with.
-        /// </summary>
-        /// <param name="postHref"></param>
-        /// <param name="artist"></param>
-        /// <returns>Returns false if post already exists in database.</returns>
-        private bool SavePostIntoDatabase(string postHref, Artist? artist = null)
-        {
-            int postKemonoId = int.Parse(postHref);
-            Post post = dbContext.Posts.FirstOrDefault(x => x.KemonoId == postKemonoId);
-            if (post == null) 
-            {
-                post = new Post();
-                post.Artist = artist;
-                post.KemonoId = postKemonoId;
-                dbContext.Posts.Add(post);
-                dbContext.SaveChanges();
-                return true;
-            }
-            else 
-            {
-                return false;
-            }
+            HtmlWeb hw = new HtmlWeb();
+            var doc = hw.Load(post.Url());
+            return doc.Text;
         }
 
         //private void ProcessArtistUrlWithCocksies(string artistUrl)
@@ -207,45 +232,6 @@ namespace KemonoDownloader.Logic
         /// <param name="artistName"></param>
         /// <param name="artistUrl"></param>
         /// <returns></returns>
-        public Artist GetArtistDatabaseInstance(string artistName, string artistUrl)
-        {
-            Artist artistsInDb = null;
-            if (dbContext.Artists.Count(x => x.ArtistUrl.Equals(artistUrl)) > 0)
-            {
-                artistsInDb = dbContext.Artists.FirstOrDefault(x => x.ArtistUrl == artistUrl);
-            }
-
-            if (artistsInDb == null)
-            {
-                artistsInDb = new Artist();
-                artistsInDb.Name = artistName;
-                artistsInDb.ArtistUrl = artistUrl;
-                artistsInDb.DateAdded = DateTime.Now;
-                artistsInDb.PathOnDisk = CreateArtistPath(artistsInDb);
-                dbContext.Artists.Add(artistsInDb);
-                dbContext.SaveChanges();
-
-            }
-            return artistsInDb;
-        }
-
-        // https://stackoverflow.com/a/23103561/10299831
-        static T TryLoop<T>(Func<T> anyMethod)
-        {
-            while (true)
-            {
-                try
-                {
-                    return anyMethod();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                    System.Threading.Thread.Sleep(2000); // *
-                }
-            }
-            return default(T);
-        }
 
         static List<string> GetAllPostOnAPage(string pageUrl)
         {
@@ -264,12 +250,6 @@ namespace KemonoDownloader.Logic
 
         private void GetPostAttachments(string choice, Post post)
         {
-            if (post.Processed)
-            {
-                Console.WriteLine($"Post {post.Id} already processed.");
-                return;
-            }
-
             string postUrl = post.Url();
             HtmlWeb hw = new HtmlWeb();
             var doc = TryLoop(() =>
@@ -282,94 +262,139 @@ namespace KemonoDownloader.Logic
                 foreach (HtmlNode attachment in doc.DocumentNode.SelectNodes("//a[contains(@class, 'post__attachment-link')]"))
                 {
                     var url = attachment.GetAttributeValue("href", string.Empty);
+                    var fullUrl = KEMONO_BASE_URL + url;
                     var fileName = attachment.InnerText;
-                    fileName = ValidatePathName(postUrl.Split("post/")[1] + "_" + fileName.Split("\n")[1].TrimStart().Split("\n")[0]);
-                    if (!CheckIfFileExists(artistIndex.Item2 + "\\" + fileName))
+                    fileName = storageOps.ValidatePathName(postUrl.Split("post/")[1] + "_" + fileName.Split("\n")[1].TrimStart().Split("\n")[0]);
+
+                    Media mediaInDb = storageOps.GetMediaInDatabase(post, url, fileName);
+
+                    if (mediaInDb is null)
                     {
-                        var fullUrl = kemonoBaseUrl + url;
+                        break;
+                    }
+
+                    if (!storageOps.CheckIfFileExists(mediaInDb.Path()))
+                    {
                         Console.WriteLine("Downloading: " + fullUrl);
                         WebClient webClient = new WebClient();
                         Console.WriteLine($"Downloading attachment: {fileName}");
 
                         // Create post folder
-                        if (choice.Equals("y"))
-                        {
-                            System.IO.Directory.CreateDirectory(artistIndex.Item2);
-                        }
+                        //if (choice.Equals("y"))
+                        //{
+                        //    System.IO.Directory.CreateDirectory(media.Post.Artist.Name);
+                        //}
 
                         TryLoopAction(() =>
                         {
-                            webClient.DownloadFile(new Uri(fullUrl), artistIndex.Item2 + "\\" + fileName);
+                            webClient.DownloadFile(new Uri(fullUrl), mediaInDb.Post.Artist.Name + "\\" + fileName);
                         });
                         Console.WriteLine("Download done.");
                         webClient.Dispose();
-                        Sleep();
                     }
-                    else Console.WriteLine($"File exists, skipping: {fileName}");
-                }
-            }
-        }
-
-        private void GetImagesFromASinglePost(string choice, Post post)
-        {
-            HtmlWeb hw = new HtmlWeb();
-            HtmlDocument doc = new HtmlDocument();
-            doc = TryLoop(() =>
-            {
-                return hw.Load(postUrl);
-            });
-
-            if (doc.DocumentNode.SelectNodes("//div[contains(@class, 'post__files')]") != null)
-            {
-                foreach (HtmlNode div in doc.DocumentNode.SelectNodes("//div[contains(@class, 'post__files')]"))
-                {
-                    var counter = 0;
-                    // Get the value of the HREF attribute
-                    foreach (HtmlNode url in div.SelectNodes("//a[contains(@class, 'fileThumb')]"))
+                    else
                     {
-                        string hrefValue = url.GetAttributeValue("href", string.Empty);
-                        string extension = hrefValue.Split(".").Last();
-                        if (extension.Equals("jpe"))
-                        {
-                            extension = "jpg";
-                        }
-                        var fileName = ValidatePathName(postUrl.Split("post/")[1] + "_" + counter + "." + extension);
-
-                        string postFolder = artistIndex.Item2;
-
-                        // create a folder for each post as well
-                        if (choice.Equals("y"))
-                        {
-                            var postName = GetPostName(doc);
-                            postFolder = postFolder + "\\" + postName;
-                        }
-
-                        // Make sure that the directory exists
-                        System.IO.Directory.CreateDirectory(postFolder);
-
-
-                        if (!CheckIfFileExists(postFolder + "\\" + fileName))
-                        {
-                            Console.WriteLine($"Saving: {fileName}");
-                            if (extension.Equals("gif"))
-                            {
-                                SaveGif(kemonoBaseUrl + hrefValue, postFolder + "\\" + fileName);
-                            }
-                            else SaveImage(kemonoBaseUrl + hrefValue, postFolder + "\\" + fileName);
-
-                            Sleep();
-                        }
-                        else Console.WriteLine($"File exists, skipping: {fileName}");
-                        counter += 1;
+                        Console.WriteLine($"File exists, skipping: {fileName}");
                     }
+                    storageOps.MarkMediaExistsInDb(mediaInDb);
                 }
             }
         }
-        private bool CheckIfFileExists(string fileName)
+
+        private void TryLoopAction(Action anyAction)
         {
-            var workingDirectory = Environment.CurrentDirectory;
-            var file = $"{workingDirectory}\\{fileName}";
-            return File.Exists(file);
+            while (true)
+            {
+                try
+                {
+                    anyAction();
+                    break;
+                }
+                catch (Exception e)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write("Error: ");
+                    Console.ResetColor();
+                    Console.Write(e.Message + "\n"
+                        + e.StackTrace + "\n"
+                        + e.InnerException);
+                    System.Threading.Thread.Sleep(2000); // *
+                }
+            }
+        }
+
+        private void SaveGif(string gifUrl, string filePath)
+        {
+            Console.WriteLine("Downloading: " + gifUrl);
+            WebClient webClient = new WebClient();
+            Console.WriteLine($"Downloading attachment: {filePath}");
+            string nullString = TryLoop(() =>
+                {
+                    webClient.DownloadFile(new Uri(gifUrl), filePath);
+                    return String.Empty;
+                }
+            );
+            webClient.Dispose();
+        }
+
+        private void SaveImage(string imageUrl, string filePath)
+        {
+            WebClient client = new WebClient();
+
+            Console.WriteLine("Downloading: " + imageUrl);
+            Stream stream = Stream.Null;
+            Bitmap bitmap = null;
+            stream = TryLoop(() =>
+                {
+                    return client.OpenRead(imageUrl);
+                }
+            );
+            bitmap = new Bitmap(stream);
+
+            if (bitmap != null)
+            {
+                bitmap.Save(filePath);
+            }
+
+            stream.Flush();
+            stream.Close();
+            client.Dispose();
+        }
+
+        static void Sleep(int length = 1)
+        {
+            Random rnd = new Random();
+            var randInt = 0;
+            if (length == 0)
+            {
+                randInt = rnd.Next(1354, 5987);
+                Console.WriteLine($"Next post, slept for {randInt} miliseconds so as not to overburden the site.");
+            }
+            else
+            {
+                randInt = rnd.Next(585, 3576);
+                Console.WriteLine($"Slept for {randInt} miliseconds so as not to overburden the site.");
+            }
+
+            Thread.Sleep(randInt);
+        }
+
+        // https://stackoverflow.com/a/23103561/10299831
+        static T TryLoop<T>(Func<T> anyMethod)
+        {
+            while (true)
+            {
+                try
+                {
+                    return anyMethod();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    System.Threading.Thread.Sleep(2000); // *
+                }
+            }
+            return default(T);
         }
     }
 }

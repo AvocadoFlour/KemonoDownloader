@@ -11,7 +11,6 @@ namespace KemonoDownloaderDataModels.Models
     {
         [Key]
         public int Id { get; set; }
-        public int KemonoId { get; set; }
         public string FileName { get; set; }
 
         /// <summary>
@@ -19,7 +18,11 @@ namespace KemonoDownloaderDataModels.Models
         /// c:/KemonoDownloader/artist/post/mediaFile.jpg 
         /// (the above is not the correct path format)
         /// </summarys
-        public string Path { get; set; }
+        public string Path()
+        {
+            return Post.Artist.Name + "\\" + FileName;
+        }
+        public string Href { get; set; }
         public bool Exists { get; set; }
 
         /// <summary>

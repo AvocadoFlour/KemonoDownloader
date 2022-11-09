@@ -19,7 +19,7 @@ namespace KemonoDownloaderDataModels.Models
         public string? HtmlContent { get; set; }
         [Required]
         public Artist Artist { get; set; }
-        public List<Media> PostMedia { get; set; }
+        public virtual List<Media> PostMedia { get; set; }
         public bool Processed { get; set; } = false;
         /// <summary>
         /// This has to be a method and not a property

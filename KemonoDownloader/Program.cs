@@ -18,7 +18,6 @@ namespace KemonoDownloader
     {
         public static readonly Logger logger = LogManager.GetCurrentClassLogger();
         const string kemonoBaseUrl = "https://kemono.party/";
-        private static KemonoDbContext dbContext = new KemonoDbContext();
 
         static void Main(string[] args)
         {
@@ -64,25 +63,6 @@ namespace KemonoDownloader
             }
         }
         
-        //static void TryLoopAction(Action anyAction)
-        //{
-        //    while (true)
-        //    {
-        //        try
-        //        {
-        //            anyAction();
-        //            break;
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            Console.ForegroundColor = ConsoleColor.Red;
-        //            Console.Write("Error: ");
-        //            Console.ResetColor();
-        //            Console.Write(e.Message + "\n");
-        //            System.Threading.Thread.Sleep(2000); // *
-        //        }
-        //    }
-        //}
         //static string GetPostName(HtmlDocument doc)
         //{
         //    return ValidatePathName(doc.DocumentNode.SelectSingleNode("//h1[contains(@class, 'post__title')]").ChildNodes.ElementAt(1).InnerText);
@@ -97,60 +77,6 @@ namespace KemonoDownloader
         //        fileName = fileName.Substring(0, 119);
         //    }
         //    return fileName;
-        //}
-        //static void Sleep(int length = 1)
-        //{
-        //    Random rnd = new Random();
-        //    var randInt = 0;
-        //    if (length == 0)
-        //    {
-        //        randInt = rnd.Next(1354, 5987);
-        //        Console.WriteLine($"Next post, slept for {randInt} miliseconds so as not to overburden the site.");
-        //    }
-        //    else
-        //    {
-        //        randInt = rnd.Next(585, 3576);
-        //        Console.WriteLine($"Slept for {randInt} miliseconds so as not to overburden the site.");
-        //    }
-
-        //    Thread.Sleep(randInt);
-        //}
-        
-        //static void SaveGif(string gifUrl, string filePath)
-        //{
-        //    Console.WriteLine("Downloading: " + gifUrl);
-        //    WebClient webClient = new WebClient();
-        //    Console.WriteLine($"Downloading attachment: {filePath}");
-        //    TryLoopAction(() =>
-        //    {
-        //        webClient.DownloadFile(new Uri(gifUrl), filePath);
-        //    });
-        //    webClient.Dispose();
-        //}
-        //static void SaveImage(string imageUrl, string filePath)
-        //{
-        //    WebClient client = new WebClient();
-
-        //    Console.WriteLine("Downloading: " + imageUrl);
-        //    Stream stream = Stream.Null;
-        //    Bitmap bitmap = null;
-        //    TryLoopAction(() =>
-        //    {
-        //        stream = TryLoop(() =>
-        //        {
-        //            return client.OpenRead(imageUrl);
-        //        });
-        //        bitmap = new Bitmap(stream);
-        //    });
-
-        //    if (bitmap != null)
-        //    {
-        //        bitmap.Save(filePath);
-        //    }
-
-        //    stream.Flush();
-        //    stream.Close();
-        //    client.Dispose();
         //}
     }
 }
