@@ -23,7 +23,7 @@ namespace KemonoDownloader.Logic
             do
             {
                 Console.WriteLine(message);
-                string input = Console.ReadLine();
+                string input = Console.ReadLine().ToUpper();
                 if (acceptableInputs.Contains(input))
                     return input;
             } while (true);
