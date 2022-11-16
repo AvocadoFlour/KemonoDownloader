@@ -217,12 +217,14 @@ namespace KemonoDownloader.Logic
         public int GetArtistsNumberOfPages(HtmlDocument doc)
         {
             var posts = doc.DocumentNode.SelectSingleNode("//small");
-            if (posts == null)
-            {
-                return 1;
-            }
-            int numberOfPosts = int.Parse(posts.InnerHtml.Split("\n")[1].Split(" ").Last());
-            return numberOfPosts;
+            if (posts != null)
+                return int.Parse(posts.InnerHtml.Split("\n")[1].Split(" ").Last());
+
+            // if an artist only has 1 page there is no post count section,
+            // but we can just count the number of elements on the current page
+            // Get root node for posts on list and count article children
+            var tiles = doc.DocumentNode.SelectSingleNode("//div[@class=\"card-list__items\"]").SelectNodes("//article");
+            return tiles.Count;
         }
         public string GetArtistsName(HtmlDocument doc)
         {

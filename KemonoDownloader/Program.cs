@@ -49,7 +49,7 @@ namespace KemonoDownloader
 
                 // How to save downloaded posts
                 Console.WriteLine("Do you want all of the media from a single post to also be put into post-based folder? \n");
-                choice = ReadUserInput("Input \"N\" for: artistname\\artworks file hierarcy. Input \"Y\" for: artistname\\post\\artworks file hierarcy.", new List<string>() { "y", "n" });
+                choice = ReadUserInput("Input \"N\" for: artistname\\artworks file hierarcy. Input \"Y\" for: artistname\\post\\artworks file hierarcy.", new List<string>() { "Y", "N" });
 
                 DownloadingArt da = new DownloadingArt();
                 da.DownloadArt(artistUrls);
