@@ -59,7 +59,9 @@ namespace KemonoDownloader
             {
                 logger.Error($"Unhandled exception HAPPENEDZ. Read the info: {e.Message}" +
                     $"\n {e.StackTrace}" +
-                    $"\n {e.InnerException}");
+                    $"\n {e.InnerException}" +
+                    $"\n {e.GetBaseException}" +
+                    $"\n {e.Source}");
             }
         }
         
