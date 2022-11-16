@@ -5,11 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using System;
+using NLog;
 
 namespace KemonoDownloader.Logic
 {
     internal class DownloadingArt
     {
+        public static readonly Logger logger = LogManager.GetCurrentClassLogger();
         public static readonly string KEMONO_BASE_URL = "https://kemono.party/";
         private readonly int POSTS_PER_PAGE = 50;
         private readonly string paginationMarker = "?o=";
@@ -120,6 +122,7 @@ namespace KemonoDownloader.Logic
                     // Get the value of the HREF attribute
                     foreach (HtmlNode url in div.SelectNodes("//a[contains(@class, 'fileThumb')]"))
                     {
+                        Sleep();
                         string hrefValue = url.GetAttributeValue("href", string.Empty);
                         string extension = hrefValue.Split(".").Last();
                         if (extension.Equals("jpe"))
@@ -213,8 +216,11 @@ namespace KemonoDownloader.Logic
         }
         public int GetArtistsNumberOfPages(HtmlDocument doc)
         {
-
             var posts = doc.DocumentNode.SelectSingleNode("//small");
+            if (posts == null)
+            {
+                return 1;
+            }
             int numberOfPosts = int.Parse(posts.InnerHtml.Split("\n")[1].Split(" ").Last());
             return numberOfPosts;
         }
@@ -337,28 +343,19 @@ namespace KemonoDownloader.Logic
             webClient.Dispose();
         }
 
-        private void SaveImage(string imageUrl, string filePath)
+        private bool SaveImage(string imageUrl, string filePath)
         {
             WebClient client = new WebClient();
 
             Console.WriteLine("Downloading: " + imageUrl);
-            Stream stream = Stream.Null;
-            Bitmap bitmap = null;
-            stream = TryLoop(() =>
+            TryLoop(() =>
                 {
-                    return client.OpenRead(imageUrl);
+                    client.DownloadFile(new Uri(imageUrl), filePath);
+                    return string.Empty;
                 }
             );
-            bitmap = new Bitmap(stream);
-
-            if (bitmap != null)
-            {
-                bitmap.Save(filePath);
-            }
-
-            stream.Flush();
-            stream.Close();
             client.Dispose();
+            return true;
         }
 
         static void Sleep(int length = 1)
@@ -368,12 +365,12 @@ namespace KemonoDownloader.Logic
             if (length == 0)
             {
                 randInt = rnd.Next(1354, 5987);
-                Console.WriteLine($"Next post, slept for {randInt} miliseconds so as not to overburden the site.");
+                Console.WriteLine($"Next post, slept for {randInt} miliseconds so as to not overburden the site.");
             }
             else
             {
                 randInt = rnd.Next(585, 3576);
-                Console.WriteLine($"Slept for {randInt} miliseconds so as not to overburden the site.");
+                Console.WriteLine($"Slept for {randInt} miliseconds so as to not overburden the site.");
             }
 
             Thread.Sleep(randInt);
