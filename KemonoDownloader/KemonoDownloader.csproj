@@ -8,12 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="C:\Users\Gandeloft\.nuget\packages\nlog.config\4.7.15\contentFiles\any\any\NLog.config" />
-    <None Remove="C:\Users\Gandeloft\.nuget\packages\nlog.schema\5.0.4\contentFiles\any\any\NLog.xsd" />
-    <None Remove="Logic\KemonoDbContextFunctions.cs~RF690475.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.10">
       <PrivateAssets>all</PrivateAssets>
