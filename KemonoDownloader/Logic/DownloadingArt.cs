@@ -119,49 +119,53 @@ namespace KemonoDownloader.Logic
                 foreach (HtmlNode div in doc.DocumentNode.SelectNodes("//div[contains(@class, 'post__files')]"))
                 {
                     var counter = 0;
-                    // Get the value of the HREF attribute
-                    foreach (HtmlNode url in div.SelectNodes("//a[contains(@class, 'fileThumb')]"))
+                    //Extra checks for empty posts
+                    if (div.SelectNodes("//a[contains(@class, 'fileThumb')]") != null)
                     {
-                        Sleep();
-                        string hrefValue = url.GetAttributeValue("href", string.Empty);
-                        string extension = hrefValue.Split(".").Last();
-                        if (extension.Equals("jpe"))
+                        // Get the value of the HREF attribute
+                        foreach (HtmlNode url in div.SelectNodes("//a[contains(@class, 'fileThumb')]"))
                         {
-                            extension = "jpg";
-                        }
-                        var fileName = storageOps.ValidatePathName(post.Url().Split("post/")[1] + "_" + counter + "." + extension);
-
-                        string postFolder = post.Artist.Name;
-
-                        Media mediaInDb = storageOps.GetMediaInDatabase(post, hrefValue, fileName);
-
-                        if (mediaInDb is null)
-                        {
-                            continue;
-                        }
-
-                        //// create a folder for each post as well
-                        //if (choice.Equals("y"))
-                        //{
-                        //    var postName = GetPostName(doc);
-                        //    postFolder = postFolder + "\\" + postName;
-                        //}
-
-                        // Make sure that the directory exists
-                        System.IO.Directory.CreateDirectory(postFolder);
-
-                        if (!storageOps.CheckIfFileExists(postFolder + "\\" + fileName))
-                        {
-                            Console.WriteLine($"Saving: {fileName}");
-                            if (extension.Equals("gif"))
+                            Sleep();
+                            string hrefValue = url.GetAttributeValue("href", string.Empty);
+                            string extension = hrefValue.Split(".").Last();
+                            if (extension.Equals("jpe"))
                             {
-                                SaveGif(KEMONO_BASE_URL + mediaInDb.Href, postFolder + "\\" + fileName);
+                                extension = "jpg";
                             }
-                            else SaveImage(KEMONO_BASE_URL + mediaInDb.Href, postFolder + "\\" + fileName);
+                            var fileName = storageOps.ValidatePathName(post.Url().Split("post/")[1] + "_" + counter + "." + extension);
+
+                            string postFolder = post.Artist.Name;
+
+                            Media mediaInDb = storageOps.GetMediaInDatabase(post, hrefValue, fileName);
+
+                            if (mediaInDb is null)
+                            {
+                                continue;
+                            }
+
+                            //// create a folder for each post as well
+                            //if (choice.Equals("y"))
+                            //{
+                            //    var postName = GetPostName(doc);
+                            //    postFolder = postFolder + "\\" + postName;
+                            //}
+
+                            // Make sure that the directory exists
+                            System.IO.Directory.CreateDirectory(postFolder);
+
+                            if (!storageOps.CheckIfFileExists(postFolder + "\\" + fileName))
+                            {
+                                Console.WriteLine($"Saving: {fileName}");
+                                if (extension.Equals("gif"))
+                                {
+                                    SaveGif(KEMONO_BASE_URL + mediaInDb.Href, postFolder + "\\" + fileName);
+                                }
+                                else SaveImage(KEMONO_BASE_URL + mediaInDb.Href, postFolder + "\\" + fileName);
+                            }
+                            else Console.WriteLine($"File exists, skipping: {fileName}");
+                            counter += 1;
+                            storageOps.MarkMediaExistsInDb(mediaInDb);
                         }
-                        else Console.WriteLine($"File exists, skipping: {fileName}");
-                        counter += 1;
-                        storageOps.MarkMediaExistsInDb(mediaInDb);
                     }
                 }
             }
