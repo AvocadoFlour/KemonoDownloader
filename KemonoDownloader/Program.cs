@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using NLog.Fluent;
 using System.Data.SqlTypes;
 using KemonoDownloader.Logic;
+using Pastel;
 
 namespace KemonoDownloader
 {
@@ -28,8 +29,8 @@ namespace KemonoDownloader
                 string choice;
 
                 // Where to get the artists links from
-                Console.WriteLine("Would you like to download the artists to which the links are in the file \n\"artistUrls.txt\" or would you like to input the artist urls?");
-                menu = ReadUserInput("Input \"1\" to read from the file, or \"2\" to input the urls.", new List<string>() { "1", "2" });
+                Console.WriteLine("Master, what is it that you oh so desire?");
+                menu = ReadUserInput(wrongInput, new List<string>() { "1", "2", "3" }, ShowMenu);
 
                 // Read from file
                 if (menu == "1")
@@ -48,8 +49,8 @@ namespace KemonoDownloader
                 }
 
                 // How to save downloaded posts
-                Console.WriteLine("Do you want all of the media from a single post to also be put into post-based folder? \n");
-                choice = ReadUserInput("Input \"N\" for: artistname\\artworks file hierarcy. Input \"Y\" for: artistname\\post\\artworks file hierarcy.", new List<string>() { "y", "n" });
+                Console.WriteLine("Do you want all of the media from a single post to also be put into post-based folder? (Y/N) \n");
+                choice = ReadUserInput(wrongInput + "\n Input \"N\" for: artistname\\artworks file hierarcy. Input \"Y\" for: artistname\\post\\artworks file hierarcy.", new List<string>() { "y", "n" });
 
                 DownloadingArt da = new DownloadingArt();
                 da.DownloadArt(artistUrls);

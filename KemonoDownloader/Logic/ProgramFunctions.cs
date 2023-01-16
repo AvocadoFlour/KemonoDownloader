@@ -1,9 +1,16 @@
-﻿using static KemonoDownloader.Program;
+﻿using Pastel;
+using System;
+using System.Drawing;
+using System.Linq.Expressions;
+using static KemonoDownloader.Program;
 
 namespace KemonoDownloader.Logic
 {
     public static class ProgramFunctions
     {
+        public static string blushFace = "(".Pastel("#ffdbac") + "//".Pastel(Color.OrangeRed) + ">".Pastel(Color.DeepSkyBlue) + "/".Pastel(Color.OrangeRed) + "_".Pastel("#c9616b") + "/".Pastel(Color.OrangeRed) + "<".Pastel(Color.DeepSkyBlue) + "//".Pastel(Color.OrangeRed) + ")".Pastel("#ffdbac");
+        public static string wrongInput = "B-baka! That's the wrong input! " + blushFace;
+
         public static List<string> ReadArtistUrlsFromFile()
         {
             try
@@ -18,14 +25,18 @@ namespace KemonoDownloader.Logic
             }
         }
 
-        public static string ReadUserInput (string message, List<string> acceptableInputs)
+        public static string ReadUserInput(string unexpectedInputMessage, List<string> acceptableInputs, Action? instruction = null)
         {
             do
             {
-                Console.WriteLine(message);
+                if (instruction != null)
+                {
+                    instruction();
+                }
                 string input = Console.ReadLine();
                 if (acceptableInputs.Contains(input))
                     return input;
+                Console.WriteLine(unexpectedInputMessage);
             } while (true);
         }
 
@@ -35,6 +46,13 @@ namespace KemonoDownloader.Logic
             {
                 sw.Write(artistUrls);
             }
+        }
+
+        public static void ShowMenu()
+        {
+            Console.WriteLine("(1) Read artists from the file");
+            Console.WriteLine("(2) Input artist urls");
+            Console.WriteLine("(3) Download favourited artists");
         }
 
     }
