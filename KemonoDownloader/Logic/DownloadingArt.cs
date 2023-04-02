@@ -12,7 +12,8 @@ namespace KemonoDownloader.Logic
     internal class DownloadingArt
     {
         public static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        public static readonly string KEMONO_BASE_URL = "https://kemono.party/";
+        public static readonly string KEMONO_BASE_URL = ""; //It causes problems and seems not to really be needed so its empty
+		public static readonly string KEMONO_BASE_URL2 = "https://kemono.party/";
         private readonly int POSTS_PER_PAGE = 50;
         private readonly string paginationMarker = "?o=";
         private readonly MediaStorageOperations storageOps = new MediaStorageOperations();
@@ -113,6 +114,8 @@ namespace KemonoDownloader.Logic
             {
                 return hw.Load(post.Url());
             });
+			
+			string postFolder = GetPostName(doc);
 
             if (doc.DocumentNode.SelectNodes("//div[contains(@class, 'post__files')]") != null)
             {
@@ -129,9 +132,10 @@ namespace KemonoDownloader.Logic
                         {
                             extension = "jpg";
                         }
-                        var fileName = storageOps.ValidatePathName(post.Url().Split("post/")[1] + "_" + counter + "." + extension);
+                        //var fileName = storageOps.ValidatePathName(post.Url().Split("post/")[1] + "_" + counter + "." + extension);
+						var fileName = CheckPostName(post.Url().Split("post/")[1] + "_" + counter + "." + extension);
 
-                        string postFolder = post.Artist.Name;
+                        string artistFolder = post.Artist.Name;
 
                         Media mediaInDb = storageOps.GetMediaInDatabase(post, hrefValue, fileName);
 
@@ -148,16 +152,16 @@ namespace KemonoDownloader.Logic
                         //}
 
                         // Make sure that the directory exists
-                        System.IO.Directory.CreateDirectory(postFolder);
+                        System.IO.Directory.CreateDirectory(artistFolder + "\\" + postFolder);
 
-                        if (!storageOps.CheckIfFileExists(postFolder + "\\" + fileName))
+                        if (!storageOps.CheckIfFileExists(artistFolder + "\\" + postFolder + "\\" + fileName))
                         {
                             Console.WriteLine($"Saving: {fileName}");
                             if (extension.Equals("gif"))
                             {
-                                SaveGif(KEMONO_BASE_URL + mediaInDb.Href, postFolder + "\\" + fileName);
+                                SaveGif(mediaInDb.Href, artistFolder + "\\" + postFolder + "\\" + fileName);
                             }
-                            else SaveImage(KEMONO_BASE_URL + mediaInDb.Href, postFolder + "\\" + fileName);
+                            else SaveImage(mediaInDb.Href, artistFolder + "\\" + postFolder + "\\" + fileName);
                         }
                         else Console.WriteLine($"File exists, skipping: {fileName}");
                         counter += 1;
@@ -264,6 +268,8 @@ namespace KemonoDownloader.Logic
             {
                 return hw.Load(postUrl);
             });
+			
+			string postFolder = GetPostName(doc);
 
             if (doc.DocumentNode.SelectNodes("//a[contains(@class, 'post__attachment-link')]") != null)
             {
@@ -280,10 +286,14 @@ namespace KemonoDownloader.Logic
                     {
                         break;
                     }
-
+					
                     if (!storageOps.CheckIfFileExists(mediaInDb.Path()))
                     {
-                        Console.WriteLine("Downloading: " + fullUrl);
+						
+						if (!storageOps.CheckIfFileExists(mediaInDb.Post.Artist.Name + "\\" + postFolder + "\\" + fileName))
+                        {
+						
+						Console.WriteLine("Downloading: " + url);
                         WebClient webClient = new WebClient();
                         Console.WriteLine($"Downloading attachment: {fileName}");
 
@@ -292,14 +302,18 @@ namespace KemonoDownloader.Logic
                         //{
                         //    System.IO.Directory.CreateDirectory(media.Post.Artist.Name);
                         //}
+						System.IO.Directory.CreateDirectory(mediaInDb.Post.Artist.Name + "\\" + postFolder);
 
                         TryLoopAction(() =>
                         {
-                            webClient.DownloadFile(new Uri(fullUrl), mediaInDb.Post.Artist.Name + "\\" + fileName);
+                            webClient.DownloadFile(new Uri(url), mediaInDb.Post.Artist.Name + "\\" + postFolder + "\\" + fileName);
                         });
                         Console.WriteLine("Download done.");
                         webClient.Dispose();
-                    }
+					
+						}
+					
+					}
                     else
                     {
                         Console.WriteLine($"File exists, skipping: {fileName}");
@@ -395,5 +409,24 @@ namespace KemonoDownloader.Logic
             }
             return default(T);
         }
+		
+		static string GetPostName(HtmlDocument doc)
+		{
+			return CheckPostName(doc.DocumentNode.SelectSingleNode("//h1//span").InnerText);
+		}
+		
+		//Some posts may have characters like ? and ! which will just cause the program to crash, this is gonna replace them with underscores
+		static string CheckPostName(string Name) //This also took way too long
+		{
+			string fixedName = Name.Replace("\\", "_").Replace("/", "_").Replace(":", "_").Replace("*", "_").Replace("?", "_").Replace("\u0022", "_").Replace("<", "_").Replace(">", "_").Replace("|", "_"); //Yeah, there was no better actually working way of doing this it seems
+			
+			fixedName = fixedName.TrimEnd(' '); //Some posts may have a space at the end of the title for whatever reason, which will cause the program to not know where to save a file. Yeah, for real. This just deletes spaces at the end of folder names
+			
+			return fixedName;
+			if (!fixedName.Equals(Name))
+			{
+				Console.WriteLine("Bad characters detected, changing directory name to: " + Name);
+			}
+		}
     }
 }
