@@ -12,6 +12,7 @@ using NLog.Fluent;
 using System.Data.SqlTypes;
 using KemonoDownloader.Logic;
 using Pastel;
+using KemonoDownloader.Menu;
 
 namespace KemonoDownloader
 {
@@ -30,27 +31,41 @@ namespace KemonoDownloader
 
                 // Where to get the artists links from
                 Console.WriteLine("Master, what is it that you oh so desire?");
-                menu = ReadUserInput(wrongInput, new List<string>() { "1", "2", "3" }, ShowMenu);
+                menu = ReadUserInput(wrongInputMessage, new List<string>() { MenuChoices.MENU_OPTION_1, MenuChoices.MENU_OPTION_2 } );
 
-                // Read from file
-                if (menu == "1")
-                {
-                    artistUrls = ReadArtistUrlsFromFile();
-                }
                 // Read console input
-                if (menu == "2")
+                if (menu == "1")
                 {
                     Console.WriteLine("Input (paste or manually type in) the artist URLs. They must be seperated by a space. " +
                         "\n The program will not work properly if you don't correctly input the artist links." +
                         "\n Already existing files will not be downloaded anew.");
                     var artistUrlsRaw = Console.ReadLine();
+
+                    //TODO: Spremi u BAZU, ne u .txt file
                     SaveArtistUrlsToFile(artistUrlsRaw);
+
+                    string urlRegexPattern = "(^http?s?:\\/\\/(?:www.)?(kemono).(party)/(fanbox|patreon)\\/(user)\\/([0-9])+)";
+                    Regex urlRegex = new Regex(urlRegexPattern);
+
+                    string[] perfectList = Regex.Split(artistUrlsRaw, urlRegexPattern);
+
+                    foreach (string perfect in perfectList) 
+                    {
+                        
+                        Console.WriteLine(perfect);
+                    }
+
                     artistUrls = artistUrlsRaw.Split(" ", StringSplitOptions.TrimEntries).ToList();
+                }
+                // Read from file
+                if (menu == "2")
+                {
+                    artistUrls = ReadArtistUrlsFromFile();
                 }
 
                 // How to save downloaded posts
                 Console.WriteLine("Do you want all of the media from a single post to also be put into post-based folder? (Y/N) \n");
-                choice = ReadUserInput(wrongInput + "\n Input \"N\" for: artistname\\artworks file hierarcy. Input \"Y\" for: artistname\\post\\artworks file hierarcy.", new List<string>() { "y", "n" });
+                choice = ReadUserInput(wrongInputMessage + "\n Input \"N\" for: artistname\\artworks file hierarcy. Input \"Y\" for: artistname\\post\\artworks file hierarcy.", new List<string>() { "y", "n" });
 
                 DownloadingArt da = new DownloadingArt();
                 da.DownloadArt(artistUrls);

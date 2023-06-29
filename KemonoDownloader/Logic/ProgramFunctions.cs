@@ -9,7 +9,7 @@ namespace KemonoDownloader.Logic
     public static class ProgramFunctions
     {
         public static string blushFace = "(".Pastel("#ffdbac") + "//".Pastel(Color.OrangeRed) + ">".Pastel(Color.DeepSkyBlue) + "/".Pastel(Color.OrangeRed) + "_".Pastel("#c9616b") + "/".Pastel(Color.OrangeRed) + "<".Pastel(Color.DeepSkyBlue) + "//".Pastel(Color.OrangeRed) + ")".Pastel("#ffdbac");
-        public static string wrongInput = "B-baka! That's the wrong input! " + blushFace;
+        public static string wrongInputMessage = "B-baka! That's the wrong input! " + blushFace;
 
         public static List<string> ReadArtistUrlsFromFile()
         {
@@ -25,6 +25,15 @@ namespace KemonoDownloader.Logic
             }
         }
 
+        /// <summary>
+        /// Define input parameters (acceptableInputs), 
+        /// the clarification of actions associated with each input as a method (instruction) 
+        /// and the feedback message for when the inputted input was invalid.
+        /// </summary>
+        /// <param name="unexpectedInputMessage">Invalid input feedback message</param>
+        /// <param name="acceptableInputs">Valid inputs</param>
+        /// <param name="instruction">Explanations for what to input</param>
+        /// <returns></returns>
         public static string ReadUserInput(string unexpectedInputMessage, List<string> acceptableInputs, Action? instruction = null)
         {
             do
@@ -38,6 +47,29 @@ namespace KemonoDownloader.Logic
                     return input;
                 Console.WriteLine(unexpectedInputMessage);
             } while (true);
+
+        }
+        public static string ReadUserInput(string unexpectedInputMessage, List<string> options)
+        {
+            do
+            {
+                foreach (string option in options)
+                {
+                    Console.WriteLine($"({options.IndexOf(option) + 1}) {option}");
+                }
+                string input = Console.ReadLine();
+                int intInput = 0;
+                bool inputCheck = int.TryParse(input, out intInput);
+                if (inputCheck)
+                {
+                    intInput -= 1;
+                    if (intInput > -1 && options.Count() >= intInput)
+                    {
+                        return input;
+                    }
+                }
+                Console.WriteLine(unexpectedInputMessage);
+            } while (true);
         }
 
         public static void SaveArtistUrlsToFile(string artistUrls)
@@ -46,13 +78,6 @@ namespace KemonoDownloader.Logic
             {
                 sw.Write(artistUrls);
             }
-        }
-
-        public static void ShowMenu()
-        {
-            Console.WriteLine("(1) Read artists from the file");
-            Console.WriteLine("(2) Input artist urls");
-            Console.WriteLine("(3) Download favourited artists");
         }
 
     }

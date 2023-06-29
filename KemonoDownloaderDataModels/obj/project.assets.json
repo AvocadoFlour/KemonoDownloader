@@ -1263,11 +1263,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj",
+      "projectUniqueName": "D:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj",
       "projectName": "KemonoDownloaderDataModels",
-      "projectPath": "F:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj",
+      "projectPath": "D:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj",
       "packagesPath": "C:\\Users\\Gandeloft\\.nuget\\packages\\",
-      "outputPath": "F:\\KemonoDownloader\\KemonoDownloaderDataModels\\obj\\",
+      "outputPath": "D:\\KemonoDownloader\\KemonoDownloaderDataModels\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Gandeloft\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -1278,7 +1278,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "http://api.nuget.org/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net6.0": {
@@ -1323,16 +1323,8 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1803",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "You are running the 'restore' operation with an 'HTTP' source, 'http://api.nuget.org/v3/index.json'. Non-HTTPS access will be removed in a future version. Consider migrating to an 'HTTPS' source."
-    }
-  ]
+  }
 }

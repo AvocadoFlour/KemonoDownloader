@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "AJYxRZh8j/uVqBwab+kZbgzAwzeCQ235wFptb+tOIb3w9JTWpGh6wsx68qHxJp26WxynR2emC1jFvVOo+tOY2w==",
+  "dgSpecHash": "j21QjnRqyRFO+Cj6Gcz8jxkwl8g10xSqJiXtH9GXVHt+oQmeB3k0cBpc8Dh9wcN2/bBlnzINBqdCWxgbZRm0bQ==",
   "success": true,
-  "projectFilePath": "F:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj",
+  "projectFilePath": "D:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Gandeloft\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\Gandeloft\\.nuget\\packages\\microsoft.data.sqlite.core\\6.0.10\\microsoft.data.sqlite.core.6.0.10.nupkg.sha512",
@@ -36,12 +36,5 @@
     "C:\\Users\\Gandeloft\\.nuget\\packages\\system.text.encodings.web\\6.0.0\\system.text.encodings.web.6.0.0.nupkg.sha512",
     "C:\\Users\\Gandeloft\\.nuget\\packages\\system.text.json\\6.0.0\\system.text.json.6.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1803",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "You are running the 'restore' operation with an 'HTTP' source, 'http://api.nuget.org/v3/index.json'. Non-HTTPS access will be removed in a future version. Consider migrating to an 'HTTPS' source."
-    }
-  ]
+  "logs": []
 }

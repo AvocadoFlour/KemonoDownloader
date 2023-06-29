@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "F:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj": {}
+    "D:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj": {}
   },
   "projects": {
-    "F:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj": {
+    "D:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj",
+        "projectUniqueName": "D:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj",
         "projectName": "KemonoDownloaderDataModels",
-        "projectPath": "F:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj",
+        "projectPath": "D:\\KemonoDownloader\\KemonoDownloaderDataModels\\KemonoDownloaderDataModels.csproj",
         "packagesPath": "C:\\Users\\Gandeloft\\.nuget\\packages\\",
-        "outputPath": "F:\\KemonoDownloader\\KemonoDownloaderDataModels\\obj\\",
+        "outputPath": "D:\\KemonoDownloader\\KemonoDownloaderDataModels\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Gandeloft\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -22,7 +22,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "http://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
@@ -67,7 +67,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
         }
       }
     }
